@@ -2,5 +2,4 @@ name,official_url,head,status
 DREAMPlace,https://github.com/limbo018/DREAMPlace.git,6627f3327e6cc17db7782c0b90073a498531ca3c,network-failed
 OpenROAD,https://github.com/The-OpenROAD-Project/OpenROAD.git,566a2df7ea55bb44c530ff0944b9f4b69b306a23,deferred
 OpenROAD-flow-scripts,https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git,f255c15b3dd4362a704b6af9f617b4091bdd4e6a,deferred
-Xplace,https://github.com/cuhk-eda/Xplace.git,,in-progress
-
+Xplace,https://github.com/cuhk-eda/Xplace.git,49cf66bc75ba9908f145bb6686f03cde692367cf,network-failed
