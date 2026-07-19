@@ -1,0 +1,2 @@
+experiment_id,date,benchmark,suite,num_nodes,num_movable,num_terminals,num_terminal_ni,num_nets,num_pins,utilization,density,dreamplace_commit,openroad_commit,xplace_commit,config_sha256,seed,repeat,hpwl,density_overflow,displacement,tof,mof,ace_0_5,ace_1,ace_2,ace_5,ace_10,pwc,rc,wns,tns,placement_runtime_s,routing_runtime_s,total_runtime_s,cpu,gpu,cuda_version,pytorch_version,os,density_map,congestion_map,cell_movement,routing_report,notes
+
