@@ -81,3 +81,6 @@
 - 完整论文级对比仍缺 DREAMPlace、OpenROAD/ORFS、更多 benchmark 与构建环境；不能将最小 Xplace 实验描述为完整复现。
 - adaptec2 官方归档大小 `6,041,736` 字节，SHA-256 `E5A7BC0E343A97F3D9D3A1C871636A4B51DA7F64EE71D2F04E7DB295655A09A2`。
 - adaptec2 tar 含 6 个安全相对路径条目；解压后的 `.aux/.nets/.nodes/.pl/.scl/.wts.gz` 均非空且 `gzip -t` 退出 0。
+- adaptec4 官方归档大小 `10,568,881` 字节，SHA-256 `CA894BCF93ACE5998DD393A6B6D5F240D3C695159CDC62AB055B8EDF70EF46AB`。
+- adaptec4 tar 含 6 个安全相对路径条目；解压后的 `.aux/.nets/.nodes/.pl/.scl/.wts.gz` 均非空且 `gzip -t` 退出 0。
+- 最小 benchmark 集达到 3/3（adaptec1、adaptec2、adaptec4）；ISPD2005 资源状态仍为 `partial`，因为完整竞赛集合未全部获取。

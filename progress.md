@@ -34,3 +34,4 @@
 - DREAMPlace 第三次 HEAD 测试仍失败；已停止网络尝试并更新 `download-status.csv`，等待稳定 VPN/代理。
 - 用户 VPN 未恢复系统 GitHub 连接。执行路线切换到官方 ISPD benchmark，先完成 adaptec2/adaptec4，再申请编译授权以运行 Xplace/adaptec1 最小实验。
 - adaptec2 已从官方页面下载，完成 tar 路径检查、SHA-256、解压、六个内部 gzip 完整性与 Git ignore 验证；benchmark 进度 2/3。
+- adaptec4 已完成同等级验证；最小 benchmark 目标达到 3/3。下一步需用户授权安装依赖并编译 Xplace，或继续处理 DAC 2012 人工阻塞。
