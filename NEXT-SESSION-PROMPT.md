@@ -6,11 +6,19 @@
 
 你正在继续一个 EDA 布局与可布线性科研复现环境准备任务。请直接检查本地状态并继续执行，不要从头重建，不要覆盖已有文件。
 
+## 2026-07-20 重启检查点
+
+- 已在管理员 PowerShell 中成功启用 `Microsoft-Windows-Subsystem-Linux` 与 `VirtualMachinePlatform`，两条 DISM 命令均达到 100% 并显示“操作成功完成”。
+- `wsl.exe --install` 此前两次返回 `已禁止(403)`；这是微软下载入口的 HTTP 403，不是管理员权限不足。
+- 当前必须先重启 Windows，使上述两个可选组件生效；不要再次执行 DISM，也不要从头重建仓库。
+- 重启后先运行 `wsl --status` 和 `wsl --version`。若仍是旧版收件箱 WSL 或继续出现 403，应使用微软官方直连安装包处理新版 WSL/Ubuntu；不要使用第三方镜像。
+- WSL/Ubuntu 完成后只运行 `scripts/check-environment.sh` 并记录缺失依赖，本阶段不要编译 EDA 工具。
+
 ## 工作目录与 Git
 
 - 目标仓库：`F:\GAME\复现路径`
 - 分支：`main`
-- 预期当前提交：`a3ec03e4cd0d85e7fa02258885a9ebec67a61ecf`
+- 已验证基线提交：`a3ec03e4cd0d85e7fa02258885a9ebec67a61ecf`；其后已有恢复提示词提交以及本次 WSL 重启检查点提交，恢复时以 `git log -3 --oneline` 核验提交链，不要因 HEAD 晚于基线而回退。
 - 仓库本地身份：`amirocok <amirocok06@gmail.com>`
 - 当前仓库在 Windows 账户之间读取时可能触发 Git `dubious ownership`。优先在普通用户终端运行；Codex 沙箱只在单条命令中使用：
 
@@ -137,4 +145,3 @@ git -c safe.directory='F:/GAME/复现路径' -C 'F:\GAME\复现路径' check-ign
 - 至少三个小 placement benchmark 完整、可列包、已解压且有 SHA-256。
 - DAC 2012 已获得且含 `.route/.shapes`，或有可验证的人工下载阻塞说明。
 - Git 工作树干净，第三方与数据大文件未被主仓库跟踪。
-
