@@ -41,3 +41,29 @@
 - 对 `github.com` 与 `release-assets.githubusercontent.com` 同时做单命令解析覆盖后，WSL MSI 下载开始正常传输；未修改 hosts 或系统 DNS。
 - WSL MSI 在安全停止时已下载 `36,777,984 / 258,605,056` 字节（约 14.2%）；文件位于 `third_party/wsl-installer/wsl.2.7.10.0.x64.msi.partial`，未做完成性声明或 SHA-256 校验。
 - 传输速率从约 150 KB/s 降至约 40 KB/s。按恢复清单，后续大文件与仓库下载需要用户先提供稳定网络/代理条件。
+- 用户通过 Chrome 下载的 `wsl.2.7.10.0.x64.msi` 大小为 `258605056` 字节，SHA-256 与官方值完全匹配，Authenticode 状态为 `Valid`，签名者为 Microsoft Corporation。
+- 可见 MSI 向导安装成功；`wsl --version` 报告 `2.7.10.0`、内核 `6.18.33.2-2`，`wsl --status` 退出 0 且默认版本为 2；MSI 日志 `MainEngineThread is returning 0`。
+- 当前 `wsl --list --verbose` 显示尚无已安装发行版，下一步安装 Ubuntu 24.04 LTS。
+- Ubuntu 24.04.4 `.wsl` 文件大小 `391541571` 字节，SHA-256 `9b2f7730dc68227dd04a9f3e5eab86ad85caf556b8606ad94f1f29ff5c4fd3f5`，与官方清单一致。
+- Codex 沙箱普通调用注册时报 `Wsl/Service/RegisterDistro/E_ACCESSDENIED`；沙箱外提权调用虽报告成功，但发行版注册到了不同执行身份，Lenovo 普通会话仍无发行版。必须在用户自己的非管理员 PowerShell 注册。
+- 用户普通 PowerShell 的 `wsl --list --verbose` 显示 `Ubuntu-24.04`、`Stopped`、版本 `2`；此前 Codex 沙箱看不到发行版是会话隔离现象，不能据此否定用户账户中的注册状态。
+- 首次启动已完成，Linux 用户为 `amirocok`；`/etc/os-release` 确认 `Ubuntu 24.04.4 LTS (Noble Numbat)`。
+
+## 2026-07-20 Linux 环境检查
+
+- `scripts/check-environment.sh` 于 `2026-07-20T04:20:42Z` 运行完成。
+- 可用：Git `/usr/bin/git`、Python `/usr/bin/python3`（3.12.3）、WSL `nvidia-smi` 桥接 `/usr/lib/wsl/lib/nvidia-smi`。
+- GPU：NVIDIA GeForce RTX 4060 Laptop GPU，驱动 560.94，显存 8188 MiB。
+- 缺失：`gcc`、`g++`、`cmake`、Conda、`nvcc`。
+- 本阶段按边界仅记录缺失依赖，不执行 apt/Conda 安装，不编译 EDA 工具。
+
+## 2026-07-20 GitHub 网络检查
+
+- WSL `getent ahostsv4 github.com` 返回的 STREAM/DGRAM/RAW 地址均为 `127.0.0.1`。
+- `timeout 20 git ls-remote https://github.com/cuhk-eda/Xplace.git HEAD` 在 36 ms 内失败，明确尝试连接 `github.com:443` 本机回环。
+- Git 官方文档确认 `http.curloptResolve` 支持 `[+]HOST:PORT:ADDRESS` 格式，可用 `git -c` 限定为单条命令，不写全局配置。
+- 单命令解析覆盖成功返回 Xplace HEAD `49cf66bc75ba9908f145bb6686f03cde692367cf`。
+- WSL Git 无法在当前 F: DrvFS 挂载上 chmod `.git/config.lock`；Windows Git 在同一 NTFS 路径可正常工作。
+- Xplace 已通过 Windows Git 官方浅克隆完成：remote `https://github.com/cuhk-eda/Xplace.git`，branch `main`，HEAD `49cf66bc75ba9908f145bb6686f03cde692367cf`，工作树干净。
+- Xplace 子模块 `thirdparty/pybind11` 已检出 `83b92ceb3537666fb0188f564e1d53bf8c80b0ba`；仓库总占用 `94,095,720` 字节。
+- 主仓库 `.gitignore` 正确忽略 `third_party/Xplace/README.md`，第三方源码未被主仓库跟踪。

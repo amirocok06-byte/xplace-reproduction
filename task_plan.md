@@ -7,8 +7,8 @@
 ## 阶段
 
 - [x] 阶段 1：恢复检查（Git、manifest、磁盘、残留进程与目录）
-- [ ] 阶段 2：确认并完成 WSL2/Ubuntu，运行环境检查脚本（网络阻塞，等待稳定代理/DNS 后续传）
-- [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts
+- [x] 阶段 2：确认并完成 WSL2/Ubuntu，运行环境检查脚本
+- [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts（进行中）
 - [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态
 - [ ] 阶段 5：更新 manifests/文档，验证 ignore 与 Git 工作树并提交
 
@@ -31,3 +31,10 @@
 | 2026-07-20 | 官方 WSL MSI 下载在沙箱内及获批联网后均无法连接 `github.com:443` | 第二次失败后停止重试；诊断发现 `github.com` 被解析为 `127.0.0.1`，转向 DNS 根因排查 |
 | 2026-07-20 | 普通会话读取网卡 DNS 地址被 CIM 权限拒绝 | 使用 `nslookup` 对比默认 DNS 与指定公共 DNS；不修改系统 DNS，除非用户批准 |
 | 2026-07-20 | 绕过 DNS 后官方 WSL MSI 可下载，但速率持续降至约 40 KB/s，预计单文件仍需近一小时 | 安全停止 curl，保留 `36777984/258605056` 字节 `.partial`；等待用户启用稳定代理/VPN 后用同一 URL 续传 |
+| 2026-07-20 | 首次被动 MSI 启动未实际安装且未生成日志 | 改用可见 MSI 向导；用户完成向导后以 `wsl --version`、`--status` 和 MSI 日志三重验证成功 |
+| 2026-07-20 | 沙箱内注册 Ubuntu 报 `E_ACCESSDENIED`；提权后命令成功，但普通 Lenovo 会话看不到发行版并报 `WSL_E_DISTRO_NOT_FOUND` | WSL 发行版按 Windows 用户注册；不得在管理员/沙箱身份继续初始化，改由用户在普通非管理员 PowerShell 注册已校验的本地 `.wsl` 文件 |
+| 2026-07-20 | 用户普通 PowerShell 再次注册时返回 `ERROR_ALREADY_EXISTS` | 用户的 `wsl --list --verbose` 已显示 `Ubuntu-24.04 Stopped 2`，证明发行版实际已存在；直接首次启动并初始化，不重复安装 |
+| 2026-07-20 | Linux 环境脚本在 `cmake`/`nvcc` 缺失后仍调用版本命令，输出两条 `command not found` | 视为脚本诊断噪声；缺失状态已由前置探测明确，不在本阶段安装或修改脚本 |
+| 2026-07-20 | WSL 内 `github.com` 同样解析为 `127.0.0.1`，`git ls-remote` 36 ms 内连接本机 443 失败 | 不修改 hosts/DNS/全局 Git；先按 Git 官方 `http.curloptResolve` 使用仅单命令解析覆盖验证 HTTPS |
+| 2026-07-20 | WSL Git 在 F 盘 clone 时对 `.git/config.lock` 执行 chmod，DrvFS 返回 `Operation not permitted` 并自动清理目标目录 | 改用 Windows Git + 单命令 DNS 覆盖；避免在 NTFS/DrvFS 上强行使用 Linux Git |
+| 2026-07-20 | Codex 沙箱验证 Xplace 时触发 `dubious ownership`，且 Git shell 找不到 `basename/sed` | 沙箱外只读验证，并仅在命令中传入 main/submodule `safe.directory`；不改全局配置 |

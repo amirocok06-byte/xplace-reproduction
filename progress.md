@@ -17,3 +17,15 @@
 - 已用单命令 `--resolve` 安全绕过失效 DNS，WSL MSI 正在 `.partial` 中续传；初始速率约 90–150 KB/s。
 - 因下载速率持续下降，已安全停止 curl；无残留 curl 进程，保留 36,777,984 字节 partial 供续传。
 - 阶段 2 当前阻塞条件：本机 DNS 将 GitHub 解析到回环地址，且手动单命令绕过后的带宽仍不足；等待用户启用稳定 VPN/代理或修复网络。
+- 用户通过 Chrome 完成 WSL 2.7.10 MSI 下载；已验证官方 SHA-256 与 Microsoft 数字签名。
+- 可见 MSI 向导安装完成并通过版本、状态、日志验证。阶段 2 继续处理 Ubuntu 24.04。
+- Ubuntu `.wsl` 已通过官方 SHA-256 校验。
+- 提权注册产生账户作用域偏差；普通 Lenovo 会话仍看不到 Ubuntu。下一步由用户在非管理员 PowerShell 注册，不在管理员身份初始化。
+- 用户会话确认 `Ubuntu-24.04` 已注册为 WSL2，并完成 `amirocok` 用户初始化。
+- Ubuntu 版本经 `/etc/os-release` 确认为 24.04.4 LTS；下一步仅运行仓库 Linux 环境检查脚本。
+- Linux 环境检查已运行并记录可用项与缺失依赖；阶段 2 完成。
+- 当前阶段：阶段 3。先验证 WSL 内 GitHub DNS/HTTPS，再决定 Xplace 的官方 clone 路径。
+- WSL 网络检查确认 GitHub 被回环解析阻断；下一步测试单命令 `http.curloptResolve`，不修改系统配置。
+- 单命令 GitHub 解析覆盖验证成功。
+- WSL Git 因 F: DrvFS chmod 限制无法 clone；切换 Windows Git 后 Xplace 主仓库与 pybind11 子模块完整下载并验证。
+- 已将 Xplace 在 `tools.csv` 与 `download-status.csv` 更新为 `downloaded`；下一资源为 DREAMPlace。
