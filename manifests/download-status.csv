@@ -1,5 +1,5 @@
 resource,type,official_url,status,detail,checked_utc
-DREAMPlace,tool,https://github.com/limbo018/DREAMPlace.git,network-failed,"git connection reset; codeload archive incomplete",2026-07-19T12:00:00Z
+DREAMPlace,tool,https://github.com/limbo018/DREAMPlace.git,network-failed,"2026-07-20 retry stopped after three read-only HEAD failures: connection reset, no verifiable output, then TCP 443 timeout with fresh DoH IP and HTTP/1.1; target directory absent",2026-07-20T04:37:15Z
 OpenROAD,tool,https://github.com/The-OpenROAD-Project/OpenROAD.git,deferred,"official HEAD verified; full download deferred because sustained bandwidth was below 30 KB/s",2026-07-19T12:00:00Z
 OpenROAD-flow-scripts,tool,https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git,deferred,"official HEAD verified; full download deferred because sustained bandwidth was below 30 KB/s",2026-07-19T12:00:00Z
 Xplace,tool,https://github.com/cuhk-eda/Xplace.git,downloaded,"official shallow clone complete; HEAD 49cf66bc75ba9908f145bb6686f03cde692367cf; branch main; pybind11 submodule 83b92ceb3537666fb0188f564e1d53bf8c80b0ba; 94095720 bytes",2026-07-20T04:30:47Z

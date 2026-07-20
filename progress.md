@@ -29,3 +29,6 @@
 - 单命令 GitHub 解析覆盖验证成功。
 - WSL Git 因 F: DrvFS chmod 限制无法 clone；切换 Windows Git 后 Xplace 主仓库与 pybind11 子模块完整下载并验证。
 - 已将 Xplace 在 `tools.csv` 与 `download-status.csv` 更新为 `downloaded`；下一资源为 DREAMPlace。
+- Xplace 完成记录已提交为 `7740f64`。
+- DREAMPlace 只读 HEAD 查询已出现一次 reset 和一次无输出；下一步做最后一次 HTTP/1.1 最小验证。
+- DREAMPlace 第三次 HEAD 测试仍失败；已停止网络尝试并更新 `download-status.csv`，等待稳定 VPN/代理。

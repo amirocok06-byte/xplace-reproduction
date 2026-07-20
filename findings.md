@@ -67,3 +67,7 @@
 - Xplace 已通过 Windows Git 官方浅克隆完成：remote `https://github.com/cuhk-eda/Xplace.git`，branch `main`，HEAD `49cf66bc75ba9908f145bb6686f03cde692367cf`，工作树干净。
 - Xplace 子模块 `thirdparty/pybind11` 已检出 `83b92ceb3537666fb0188f564e1d53bf8c80b0ba`；仓库总占用 `94,095,720` 字节。
 - 主仓库 `.gitignore` 正确忽略 `third_party/Xplace/README.md`，第三方源码未被主仓库跟踪。
+- 开始 DREAMPlace 前确认目标目录不存在。旧 GitHub IP `20.27.177.113` 的 HEAD 查询发生 connection reset。
+- Google 官方 DoH 随后返回 GitHub 新地址 `4.237.22.38`（TTL 60）；该地址首次查询未产生可验证输出，也没有残留 Git 进程或目标目录。
+- DREAMPlace 第三次只读测试使用 `4.237.22.38` + HTTP/1.1，21 秒后仍无法连接 GitHub 443，退出 128。
+- 三次测试后确认当前 GitHub 网络路径不具备可靠性；`third_party/DREAMPlace` 仍不存在，未留下半成品。OpenROAD 两项暂不启动，避免重复同一网络失败。
