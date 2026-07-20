@@ -71,3 +71,11 @@
 - Google 官方 DoH 随后返回 GitHub 新地址 `4.237.22.38`（TTL 60）；该地址首次查询未产生可验证输出，也没有残留 Git 进程或目标目录。
 - DREAMPlace 第三次只读测试使用 `4.237.22.38` + HTTP/1.1，21 秒后仍无法连接 GitHub 443，退出 128。
 - 三次测试后确认当前 GitHub 网络路径不具备可靠性；`third_party/DREAMPlace` 仍不存在，未留下半成品。OpenROAD 两项暂不启动，避免重复同一网络失败。
+- 用户启用 VPN 后，普通 PowerShell 的 DREAMPlace `git ls-remote` 仍连续在约 20 ms 内无法连接 GitHub 443，系统 GitHub 路径仍未恢复。
+
+## 最小可复现实验路线
+
+- Xplace README 明确提供 ISPD2005 GP+DP 流程，单设计示例为 `python main.py --dataset ispd2005 --design_name adaptec1`。
+- ISPD 2005 官方页直接提供 adaptec2 与 adaptec4 归档，URL 分别为 `https://www.ispd.cc/contests/05/ispd05-contest/benchmarks/adaptec2.tar.gz` 和 `https://www.ispd.cc/contests/05/ispd05-contest/benchmarks/adaptec4.tar.gz`。
+- 当前具备形成 Xplace/adaptec1 smoke experiment 的源码与基础数据，但缺 gcc/g++/cmake/Conda/nvcc，且原任务边界禁止未经授权安装或编译，因此尚未产生实验结果。
+- 完整论文级对比仍缺 DREAMPlace、OpenROAD/ORFS、更多 benchmark 与构建环境；不能将最小 Xplace 实验描述为完整复现。

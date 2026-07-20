@@ -32,3 +32,4 @@
 - Xplace 完成记录已提交为 `7740f64`。
 - DREAMPlace 只读 HEAD 查询已出现一次 reset 和一次无输出；下一步做最后一次 HTTP/1.1 最小验证。
 - DREAMPlace 第三次 HEAD 测试仍失败；已停止网络尝试并更新 `download-status.csv`，等待稳定 VPN/代理。
+- 用户 VPN 未恢复系统 GitHub 连接。执行路线切换到官方 ISPD benchmark，先完成 adaptec2/adaptec4，再申请编译授权以运行 Xplace/adaptec1 最小实验。

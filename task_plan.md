@@ -8,8 +8,8 @@
 
 - [x] 阶段 1：恢复检查（Git、manifest、磁盘、残留进程与目录）
 - [x] 阶段 2：确认并完成 WSL2/Ubuntu，运行环境检查脚本
-- [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts（Xplace 完成；DREAMPlace 三次网络失败，等待稳定 VPN/代理）
-- [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态
+- [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts（Xplace 完成；其余因系统 GitHub 网络不稳定而延后）
+- [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态（进行中：adaptec1 完成，改走 ISPD 官方站获取 adaptec2/adaptec4）
 - [ ] 阶段 5：更新 manifests/文档，验证 ignore 与 Git 工作树并提交
 
 ## 边界与决策
@@ -18,6 +18,7 @@
 - 一次仅下载一个工具仓库；已有目录先验证，未知内容不删除、不覆盖。
 - 下载归档先验证路径安全与完整性，再解压。
 - 本阶段不编译或安装 EDA 工具。
+- 替代路线：先形成 Xplace + ISPD2005 的最小可复现实验；只有用户再次明确授权后，才安装构建依赖、编译 Xplace 并运行 smoke experiment。
 
 ## 错误记录
 
@@ -41,3 +42,4 @@
 | 2026-07-20 | DREAMPlace HEAD 查询使用旧 GitHub IP 时 connection reset；最新 DoH IP 查询无可验证输出 | 第三次最小测试改为最新 IP + 单命令 `http.version=HTTP/1.1`；若仍失败则停止该资源尝试并保留 `network-failed` |
 | 2026-07-20 | DREAMPlace 第三次 HEAD 测试使用 HTTP/1.1 仍在 21 秒后 TCP 443 连接失败（exit 128） | 遵循三次失败协议停止该资源及其他 GitHub clone；目标目录不存在，等待用户提供稳定 VPN/代理 |
 | 2026-07-20 | 更新 DREAMPlace 记录的首次补丁因现有文本含额外空格而上下文校验失败 | 读取精确行后重新应用；首次失败未产生任何部分修改 |
+| 2026-07-20 | 用户 VPN 下系统 Git 仍无法连接 GitHub 443 | 不再依赖 GitHub 完成当前最小目标；转向 ISPD 官方站下载 benchmark，并将 DREAMPlace/OpenROAD/ORFS 延后 |
