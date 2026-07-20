@@ -9,7 +9,7 @@
 - [x] 阶段 1：恢复检查（Git、manifest、磁盘、残留进程与目录）
 - [x] 阶段 2：确认并完成 WSL2/Ubuntu，运行环境检查脚本
 - [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts（Xplace 完成；其余因系统 GitHub 网络不稳定而延后）
-- [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态（进行中：adaptec1 完成，改走 ISPD 官方站获取 adaptec2/adaptec4）
+- [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态（进行中：adaptec1/adaptec2 完成，待 adaptec4）
 - [ ] 阶段 5：更新 manifests/文档，验证 ignore 与 Git 工作树并提交
 
 ## 边界与决策

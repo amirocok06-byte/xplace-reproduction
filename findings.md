@@ -79,3 +79,5 @@
 - ISPD 2005 官方页直接提供 adaptec2 与 adaptec4 归档，URL 分别为 `https://www.ispd.cc/contests/05/ispd05-contest/benchmarks/adaptec2.tar.gz` 和 `https://www.ispd.cc/contests/05/ispd05-contest/benchmarks/adaptec4.tar.gz`。
 - 当前具备形成 Xplace/adaptec1 smoke experiment 的源码与基础数据，但缺 gcc/g++/cmake/Conda/nvcc，且原任务边界禁止未经授权安装或编译，因此尚未产生实验结果。
 - 完整论文级对比仍缺 DREAMPlace、OpenROAD/ORFS、更多 benchmark 与构建环境；不能将最小 Xplace 实验描述为完整复现。
+- adaptec2 官方归档大小 `6,041,736` 字节，SHA-256 `E5A7BC0E343A97F3D9D3A1C871636A4B51DA7F64EE71D2F04E7DB295655A09A2`。
+- adaptec2 tar 含 6 个安全相对路径条目；解压后的 `.aux/.nets/.nodes/.pl/.scl/.wts.gz` 均非空且 `gzip -t` 退出 0。
