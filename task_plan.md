@@ -48,3 +48,12 @@
 | 2026-07-20 | `rg --files` 在当前 Windows 沙箱中返回“拒绝访问” | 改用 PowerShell `Get-ChildItem` 和 `Select-String` 只读检查仓库及 Xplace 构建文件；未影响文件状态 |
 | 2026-07-20 | 首次实施计划补丁有两次格式问题：一处多行新增缺少补丁前缀，一处 JavaScript 模板被 Markdown 反引号截断 | 两次均在写入前失败；改用不含反引号的安全模板生成补丁 |
 | 2026-07-20 | 首次创建实施计划文件时 `docs/superpowers/plans` 尚不存在 | 经用户授权精确创建该目录后重新应用补丁；未覆盖已有文件 |
+
+## Task 2 execution notes (2026-07-21)
+
+- Permission boundary: the default sandbox could not access the Lenovo-owned F: worktree/WSL context; approved elevated execution was required.
+- `sudo -n true` reported `sudo: a password is required`; the authorized package transaction was run through `wsl.exe -u root` instead.
+- The first compound WSL probe failed before any apt action because PowerShell/Bash quoting corrupted `$(...)`; a simplified command without command substitution succeeded.
+- No apt network failure occurred: `apt-get update` and the 2550 MB install download completed from official Ubuntu repositories.
+- Quality-review inspection could not execute `rg.exe` under the current Windows identity (`Access is denied`); PowerShell `Select-String` supplied the equivalent read-only heading/context check.
+- A PowerShell-wrapped attempt to replay the documented Bash `mktemp` probe expanded `$probe_dir` before Bash ran, producing a denied `/xplace-sm89-probe.o` path; this was a host-shell quoting failure, and no file was created. The documented standalone Bash commands retain quoted `$probe_dir` references.

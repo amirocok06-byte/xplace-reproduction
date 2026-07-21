@@ -43,3 +43,12 @@
 - 已只读记录 Ubuntu/WSL kernel、CPU、内存、磁盘、GPU/driver/VRAM/compute capability 与指定包的 `apt-cache policy`。
 - 已知身份边界：沙箱默认身份 `CodexSandboxOffline` 不能直接访问 Lenovo 所有的 Xplace Git/WSL 上下文；本次仅在 Lenovo 上下文执行获批的只读探测，且 Git 仅使用单命令 `safe.directory`，未改动全局配置。
 - 未安装任何包，未编译 Xplace，未修改 Xplace 源码，未运行实验；后续项保持 pending。
+
+## 2026-07-21 Xplace system toolchain
+
+- Documentation timestamp: `2026-07-21T15:30:38Z` UTC (recording time, not the package transaction's exact completion second).
+- Refreshed Ubuntu 24.04 package indexes from official Ubuntu archive/security repositories.
+- Installed the authorized Xplace system dependencies with `apt-get install` and Ubuntu `nvidia-cuda-toolkit` 12.0; the transaction had 30 dependency upgrades and 0 removals, and installed no Linux display-driver metapackage.
+- Verified gcc/g++ 13.3, CMake 3.28.3, Ninja 1.11.1, Cairo 1.18.0, Boost 1.83, and nvcc 12.0.
+- Verified RTX 4060 driver 560.94 / compute capability 8.9 and successful `sm_89` compilation.
+- Did not modify or build Xplace and did not run an experiment.
