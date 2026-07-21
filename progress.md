@@ -35,3 +35,11 @@
 - 用户 VPN 未恢复系统 GitHub 连接。执行路线切换到官方 ISPD benchmark，先完成 adaptec2/adaptec4，再申请编译授权以运行 Xplace/adaptec1 最小实验。
 - adaptec2 已从官方页面下载，完成 tar 路径检查、SHA-256、解压、六个内部 gzip 完整性与 Git ignore 验证；benchmark 进度 2/3。
 - adaptec4 已完成同等级验证；最小 benchmark 目标达到 3/3。下一步需用户授权安装依赖并编译 Xplace，或继续处理 DAC 2012 人工阻塞。
+
+## 2026-07-21 Xplace build baseline
+
+- 已在 `codex/xplace-build` worktree 核对 Xplace `49cf66bc75ba9908f145bb6686f03cde692367cf` 与 pybind11 `83b92ceb3537666fb0188f564e1d53bf8c80b0ba`。
+- 已确认 `third_party/Xplace/build/probe` 由 `.gitignore` 的 `/third_party/*/` 规则忽略。
+- 已只读记录 Ubuntu/WSL kernel、CPU、内存、磁盘、GPU/driver/VRAM/compute capability 与指定包的 `apt-cache policy`。
+- 已知身份边界：沙箱默认身份 `CodexSandboxOffline` 不能直接访问 Lenovo 所有的 Xplace Git/WSL 上下文；本次仅在 Lenovo 上下文执行获批的只读探测，且 Git 仅使用单命令 `safe.directory`，未改动全局配置。
+- 未安装任何包，未编译 Xplace，未修改 Xplace 源码，未运行实验；后续项保持 pending。
