@@ -15,4 +15,5 @@ __pycache__/
 *.py[cod]
 .venv/
 .conda/
+.worktrees/
 *.partial
