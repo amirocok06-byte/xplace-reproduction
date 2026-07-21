@@ -1,6 +1,6 @@
 # Xplace build record
 
-System toolchain installed and verified on 2026-07-21 (Asia/Shanghai). This record was updated at `2026-07-21T15:30:38Z` UTC; that is the documentation time, not a claim about the package transaction's exact completion second. No Xplace source was modified, no Xplace build was run, and no experiment was run.
+System toolchain installed and verified on 2026-07-21 (Asia/Shanghai). This record was updated at `2026-07-21T16:56:50Z` UTC; that is the documentation time, not a claim about the package transaction's exact completion second. No Xplace source was modified, no Xplace build was run, and no experiment was run.
 
 ## Fixed inputs
 
@@ -100,17 +100,23 @@ The package archives remain under `/var/cache/apt/archives/`, including:
 
 ## Conda and PyTorch
 
-- Conda environment name and specification: **pending**.
-- Python environment version: **pending**.
-- PyTorch version/build and CUDA compatibility: **pending**.
-- PyTorch import and device checks: **pending**.
-- No Conda or PyTorch mutation was performed in Task 2.
+- Miniforge `26.3.2-2` base files were installed offline at `/home/amirocok/miniforge3` at documentation time `2026-07-21T16:23:02Z` UTC, using batch mode only; no shell initialization was requested.
+- Installer: `Miniforge3-26.3.2-2-Linux-x86_64.sh`, exact size `106038245` bytes, SHA-256 `42260ffe3830fb953d5eee1bbb32229ff06aa7c3833c1ed7a9a0420a95685d94`.
+- Official release URL: `https://github.com/conda-forge/miniforge/releases/download/26.3.2-2/Miniforge3-26.3.2-2-Linux-x86_64.sh`.
+- Install command: `bash /mnt/c/Users/Lenovo/Downloads/Miniforge3-26.3.2-2-Linux-x86_64.sh -b -p /home/amirocok/miniforge3` (run as `amirocok`).
+- After the user-authorized `wsl.exe --shutdown` returned exit code 0, Ubuntu restarted cleanly. The prefix is owned by `amirocok:amirocok` with mode `755`; `conda --version` reports `conda 26.3.2`, and base Python reports `Python 3.13.13`.
+- Conda environment: `eda-repro`, created with `/home/amirocok/miniforge3/bin/conda env create --file /mnt/f/GAME/复现路径/.worktrees/xplace-build/env/environment.yml`; environment Python is `3.10.20`, and its exact interpreter is `/home/amirocok/miniforge3/envs/eda-repro/bin/python`.
+- PyTorch installation method: pip only, using the official index `https://download.pytorch.org/whl/cu121`; command: `/home/amirocok/miniforge3/envs/eda-repro/bin/python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121`. The fixed [PyTorch v2.5.1 previous-version section](https://pytorch.org/get-started/previous-versions/#v251) lists the Linux CUDA 12.1 wheel index command.
+- Installed PyTorch: `2.5.1+cu121`; bundled CUDA runtime: `12.1`. This was selected instead of a CPU build or newer CUDA bundle because Xplace requires PyTorch >= 1.12/CUDA >= 11.3 and the host compiler is CUDA 12.0. PyTorch v2.5.1's tagged [`torch/utils/cpp_extension.py`](https://github.com/pytorch/pytorch/blob/v2.5.1/torch/utils/cpp_extension.py#L394-L416) raises for a CUDA major-version mismatch but emits `CUDA_MISMATCH_WARN` for a same-major minor-version mismatch.
+- Verification at `2026-07-21T16:39:25Z` UTC used `/home/amirocok/miniforge3/envs/eda-repro/bin/python -c "import sys, torch; print(sys.version.split()[0]); print(torch.__version__); print(torch.version.cuda); print(torch.compiled_with_cxx11_abi()); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0)); print(torch.cuda.get_device_capability(0))"`: Python is `3.10.20`; PyTorch is `2.5.1+cu121`; bundled CUDA is `12.1`; `torch.compiled_with_cxx11_abi()` is `False`; `torch.cuda.is_available()` is `True`; device is `NVIDIA GeForce RTX 4060 Laptop GPU`; capability is `(8, 9)`.
+- Pip-only audit commands were `/home/amirocok/miniforge3/bin/conda list -n eda-repro --show-channel-urls`, `/home/amirocok/miniforge3/envs/eda-repro/bin/python -m pip show torch`, and `/home/amirocok/miniforge3/envs/eda-repro/bin/python -c "import torch; print(torch.__file__)"`. The Conda listing contains `torch 2.5.1+cu121 pypi_0 pypi` and no `pytorch`, `torchvision`, or `torchaudio` package; pip reports location `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages`, and the import resolves to `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages/torch/__init__.py`. This confirms a single pip installation rather than a mixed Conda/pip PyTorch installation.
+- No Xplace build was run, no Xplace source was modified, and no experiment was run.
 
 ## Xplace build
 
-- Required system packages installed: complete in Task 2.
-- Compiler, CMake, CUDA, and `sm_89` toolchain verification: complete in Task 2.
-- Xplace configure/build command and output: **pending** and intentionally not run in Task 2.
+- Required system packages installed: complete through Task 3.
+- Compiler, CMake, CUDA, and `sm_89` toolchain verification: complete through Task 3.
+- Xplace configure/build command and output: **pending** and intentionally not run through Task 3.
 - Xplace import/load smoke test: **pending**.
 - Xplace source modification: none.
 

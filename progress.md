@@ -52,3 +52,13 @@
 - Verified gcc/g++ 13.3, CMake 3.28.3, Ninja 1.11.1, Cairo 1.18.0, Boost 1.83, and nvcc 12.0.
 - Verified RTX 4060 driver 560.94 / compute capability 8.9 and successful `sm_89` compilation.
 - Did not modify or build Xplace and did not run an experiment.
+
+## 2026-07-22 Xplace Python environment
+
+- Verified the browser-downloaded Miniforge `26.3.2-2` Linux x86_64 installer: `106038245` bytes and SHA-256 `42260ffe3830fb953d5eee1bbb32229ff06aa7c3833c1ed7a9a0420a95685d94`.
+- Confirmed `/home/amirocok/miniforge3` was absent immediately before installation, then ran the verified installer offline as `amirocok` with `-b -p /home/amirocok/miniforge3`; no shell initialization was requested.
+- A compound WSL verification stalled. After explicit user approval, `wsl.exe --shutdown` returned exit code 0 and Ubuntu restarted successfully; short commands verified Conda 26.3.2, prefix owner/mode `amirocok:amirocok:755`, and base Python 3.13.13.
+- Chrome `web-access` succeeded in Lenovo user context (Chrome port 9222, proxy ready).
+- Created `eda-repro` from `env/environment.yml`; verified environment Python 3.10.20.
+- Installed the pip CUDA build `torch==2.5.1` from the official cu121 index. Verified `torch=2.5.1+cu121`, bundled CUDA 12.1, C++11 ABI false, CUDA available, RTX 4060 Laptop GPU, and capability `(8, 9)` at `2026-07-21T16:39:25Z` UTC.
+- Did not build Xplace, modify Xplace source, or run an experiment.

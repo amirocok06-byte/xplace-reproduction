@@ -57,3 +57,11 @@
 - No apt network failure occurred: `apt-get update` and the 2550 MB install download completed from official Ubuntu repositories.
 - Quality-review inspection could not execute `rg.exe` under the current Windows identity (`Access is denied`); PowerShell `Select-String` supplied the equivalent read-only heading/context check.
 - A PowerShell-wrapped attempt to replay the documented Bash `mktemp` probe expanded `$probe_dir` before Bash ran, producing a denied `/xplace-sm89-probe.o` path; this was a host-shell quoting failure, and no file was created. The documented standalone Bash commands retain quoted `$probe_dir` references.
+
+## Task 3 execution notes (2026-07-22)
+
+- Chrome `web-access` checks initially remained disconnected after opening `chrome://inspect/#remote-debugging` because they ran under the sandbox identity; network-dependent environment creation was held until the identity boundary was diagnosed.
+- The offline Miniforge installer completed extraction and created the expected prefix files. The first immediate verification raced with WSL startup/filesystem state and reported `bin/conda` missing; a later inspection showed `bin/conda`, `bin/python`, and `conda-meta/history` present with `amirocok` ownership and no installer process.
+- A subsequent compound read-only WSL verification stalled and was terminated without deleting the prefix or rerunning the installer. After explicit user approval, `wsl.exe --shutdown` returned exit code 0; Ubuntu restarted successfully, and independent short commands verified Conda 26.3.2, base Python 3.13.13, prefix ownership `amirocok:amirocok:755`, and that only the base environment existed before environment creation.
+- Chrome checks failed under the sandbox identity but succeeded under the required Lenovo identity (exit 0, Chrome port 9222, proxy ready); this confirmed an identity-boundary issue rather than a missing Chrome checkbox.
+- `eda-repro` creation and the official PyTorch cu121 pip installation subsequently completed successfully; no remaining Task 3 error is open.
