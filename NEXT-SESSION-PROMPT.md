@@ -4,144 +4,215 @@
 
 ---
 
-你正在继续一个 EDA 布局与可布线性科研复现环境准备任务。请直接检查本地状态并继续执行，不要从头重建，不要覆盖已有文件。
+你正在继续一个 EDA 布局与可布线性科研复现环境任务。用户已经授权安装依赖并编译 Xplace，但明确不在本阶段运行 placement 实验。请从下述检查点继续，不要从头重建，不要删除或覆盖未知文件。
 
-## 2026-07-20 重启检查点
+## 2026-07-22 暂停检查点
 
-- 已在管理员 PowerShell 中成功启用 `Microsoft-Windows-Subsystem-Linux` 与 `VirtualMachinePlatform`，两条 DISM 命令均达到 100% 并显示“操作成功完成”。
-- `wsl.exe --install` 此前两次返回 `已禁止(403)`；这是微软下载入口的 HTTP 403，不是管理员权限不足。
-- 当前必须先重启 Windows，使上述两个可选组件生效；不要再次执行 DISM，也不要从头重建仓库。
-- 重启后先运行 `wsl --status` 和 `wsl --version`。若仍是旧版收件箱 WSL 或继续出现 403，应使用微软官方直连安装包处理新版 WSL/Ubuntu；不要使用第三方镜像。
-- WSL/Ubuntu 完成后只运行 `scripts/check-environment.sh` 并记录缺失依赖，本阶段不要编译 EDA 工具。
+### 主仓库与隔离 worktree
 
-## 工作目录与 Git
-
-- 目标仓库：`F:\GAME\复现路径`
-- 分支：`main`
-- 已验证基线提交：`a3ec03e4cd0d85e7fa02258885a9ebec67a61ecf`；其后已有恢复提示词提交以及本次 WSL 重启检查点提交，恢复时以 `git log -3 --oneline` 核验提交链，不要因 HEAD 晚于基线而回退。
-- 仓库本地身份：`amirocok <amirocok06@gmail.com>`
-- 当前仓库在 Windows 账户之间读取时可能触发 Git `dubious ownership`。优先在普通用户终端运行；Codex 沙箱只在单条命令中使用：
+- 主仓库：`F:\GAME\复现路径`
+- 主仓库分支：`main`
+- 主仓库在本提示词更新前的实施基线：`33ee4af chore: ignore local worktrees`；重启后以实际 `git log -2` 为准，不要因提示词提交使 HEAD 更新而回退。
+- 隔离 worktree：`F:\GAME\复现路径\.worktrees\xplace-build`
+- 实施分支：`codex/xplace-build`
+- 实施分支最后完成提交：`ac869edbff69ad7cc17aecdf2126879764ec8e90`
+- 不要在 `main` 上继续实施；进入上述 worktree 继续。
+- 不要修改全局 `safe.directory`。只在单条命令使用：
 
 ```powershell
-git -c safe.directory='F:/GAME/复现路径' -C 'F:\GAME\复现路径' status --short --branch
+git -c safe.directory='F:/GAME/复现路径/.worktrees/xplace-build' -C 'F:\GAME\复现路径\.worktrees\xplace-build' status --short --branch
 ```
 
-不要修改全局 `safe.directory`，除非用户明确批准。
+### 暂停时必须保留的未提交 Task 4 工作
+
+隔离 worktree 当前有以下已知、预期的未提交文件：
+
+```text
+ M progress.md
+ M task_plan.md
+?? scripts/check-xplace-build.sh
+```
+
+这些文件属于正在实施的 Task 4。不要 reset、checkout、clean、删除或覆盖。先查看 diff 和脚本内容，再继续验证与提交。
+
+暂停前 Task 4 的最新证据：
+
+- TDD 红灯：缺失脚本时 exit 1，输出 `./scripts/check-xplace-build.sh: No such file or directory`。
+- `bash -n scripts/check-xplace-build.sh` exit 0。
+- 脚本静态搜索 `main.py` 匹配数为 0，不运行实验。
+- Linux Git 在 DrvFS 上把约 675 个 CRLF 文件误判为修改；脚本已改用 WSL 内的 Windows `git.exe` 检查 F 盘 Xplace HEAD/clean 状态。不要改回 Linux Git，也不要放宽 clean 门禁。
+- 为确保 heredoc 传入 Python，Conda 调用已加入 `--no-capture-output`。
+- 构建前运行脚本 exit 1，GPU 检查已经通过，首个预期失败为：
+  `ModuleNotFoundError: No module named 'cpp_to_py'`
+- 该失败准确表示 Xplace CUDA/Python 扩展尚未构建；此前出现的 data-missing 输出是 stdin 未透传造成的假象，`task_plan.md` 应如实记录。
+- Task 4 子代理已在提交前被用户要求暂停；没有 Task 4 commit。
 
 ## 已完成且不要重做
 
-- 桌面实际路径由系统解析为 `F:\GAME`，仓库已初始化并有两个提交。
-- 论文已复制到 `papers/2228360.2228500.pdf`，SHA-256：
-  `FA403584FE1E5C30E9B729683345FB867B5A53FB2747DB0C7F1968B3FD736F5D`
-- ISPD 2005 `adaptec1.tar.gz` 已从官方竞赛页下载并安全解压到：
-  `datasets\ispd2005\payload\adaptec1\`
-- adaptec1 归档 SHA-256：
-  `B694DEDFE15BFFA7CB92DFBEE0BC11906F5D334D211F51D82D0AC1EFFB6C0A08`
-- 文档、Conda/pip 清单、环境检查脚本、实验 CSV、论文指标笔记、`.gitignore` 和 manifests 已建立。
-- 统一实验表有 45 个唯一字段；不要因旧计划中写了“46”而添加无意义列。
-- 已核实官方工具 HEAD（2026-07-19）：
-  - DREAMPlace：`6627f3327e6cc17db7782c0b90073a498531ca3c`
-  - OpenROAD：`566a2df7ea55bb44c530ff0944b9f4b69b306a23`
-  - OpenROAD-flow-scripts：`f255c15b3dd4362a704b6af9f617b4091bdd4e6a`
-  - Xplace：`49cf66bc75ba9908f145bb6686f03cde692367cf`
-- Xplace 正确官方仓库是 `https://github.com/cuhk-eda/Xplace.git`，不是 `limbo018/Xplace`。
-- 上次最终验收：必需文件 0 缺失、Git 工作树干净、无活动 curl、无残留损坏 ZIP。
+### WSL、Ubuntu 与 GPU
 
-## 上次中断原因
+- WSL `2.7.10.0`，kernel `6.18.33.2-microsoft-standard-WSL2`。
+- Ubuntu `24.04.4 LTS`，发行版名 `Ubuntu-24.04`，Linux 用户 `amirocok`。
+- GPU：NVIDIA GeForce RTX 4060 Laptop GPU，driver `560.94`，8188 MiB，compute capability `8.9`。
+- WSL 有时出现 localhost proxy/NAT 警告；此前不影响只读探测。
+- Codex 沙箱账户看不到 Lenovo 用户注册的 WSL；需要 WSL 命令时在普通 Lenovo 用户上下文执行。
 
-网络持续只有约 5–30 KB/s。`git clone` DREAMPlace 遇到 connection reset；GitHub codeload 不支持断点续传，DREAMPlace 与 Xplace 源码 ZIP 都在下载十几 MB 后断线并从零开始。损坏临时包已经删除，不要尝试解压不存在或未通过 CRC 的 ZIP。
+### 系统构建工具链
 
-状态详情见：
+Task 2 已完成并通过规格/质量审查，提交：
+`39563e92e4f5d78e974e09c8cca2ed150ad6423e`
 
-- `manifests/download-status.csv`
-- `manifests/tools.csv`
-- `manifests/files.sha256`
+已安装并验证：
 
-## 本次续跑的执行顺序
+- GCC/G++ `13.3.0`
+- CMake `3.28.3`
+- Ninja `1.11.1`
+- Cairo `1.18.0`
+- Boost `1.83`
+- Ubuntu 官方 `nvidia-cuda-toolkit` `12.0.140`
+- `nvcc -arch=sm_89` 空编译成功
+- APT 事务：402 new、30 dependency upgrades、0 removals；没有执行 `upgrade`/`dist-upgrade` 命令，没有安装 Linux display driver metapackage。
 
-### 1. 恢复检查
+### Miniforge、Conda 与 PyTorch
 
-先运行以下只读检查并报告结果：
+Task 3 已完成并通过规格/质量审查，提交：
+`ac869edbff69ad7cc17aecdf2126879764ec8e90`
+
+- Miniforge `26.3.2`：`/home/amirocok/miniforge3`
+- prefix owner/mode：`amirocok:amirocok:755`
+- 环境：`eda-repro`
+- 精确解释器：`/home/amirocok/miniforge3/envs/eda-repro/bin/python`
+- Python `3.10.20`
+- PyTorch `2.5.1+cu121`，仅通过官方 pip cu121 index 安装
+- PyTorch bundled CUDA `12.1`
+- `torch.compiled_with_cxx11_abi()` 为 `False`，Xplace CMake ABI 应为 `0`
+- `torch.cuda.is_available()` 为 `True`
+- GPU 为 RTX 4060，capability `(8, 9)`
+- `conda list` 显示 `torch 2.5.1+cu121 pypi_0 pypi`；没有 Conda/PyPI 混装的 pytorch/torchvision/torchaudio。
+- PyTorch 官方兼容证据已记录在 `docs/xplace-build-record.md`。
+
+Miniforge 官方安装器：
+
+- Windows 文件：`C:\Users\Lenovo\Downloads\Miniforge3-26.3.2-2-Linux-x86_64.sh`
+- 精确大小：`106038245` bytes
+- SHA-256：`42260ffe3830fb953d5eee1bbb32229ff06aa7c3833c1ed7a9a0420a95685d94`
+- 已验证与 conda-forge 官方值一致。
+- WSL 中仍可能保留早期慢速下载的 `.partial`；不要把它当完成文件，也不要覆盖已安装环境。
+
+### Xplace 源码与数据
+
+- Xplace：`F:\GAME\复现路径\third_party\Xplace`
+- remote：`https://github.com/cuhk-eda/Xplace.git`
+- branch：`main`
+- HEAD：`49cf66bc75ba9908f145bb6686f03cde692367cf`
+- pybind11：`83b92ceb3537666fb0188f564e1d53bf8c80b0ba`
+- Windows Git 检查工作树为 clean。
+- Xplace 尚未配置、编译或安装扩展。
+- 不修改 Xplace 源码来规避兼容问题；若编译暴露源码问题，先保留错误证据，再向用户征求授权。
+
+三个 ISPD 2005 benchmark 已从官方来源下载、安全检查、解压并记录 SHA-256：
+
+- adaptec1：`B694DEDFE15BFFA7CB92DFBEE0BC11906F5D334D211F51D82D0AC1EFFB6C0A08`
+- adaptec2：`E5A7BC0E343A97F3D9D3A1C871636A4B51DA7F64EE71D2F04E7DB295655A09A2`
+- adaptec4：`CA894BCF93ACE5998DD393A6B6D5F240D3C695159CDC62AB055B8EDF70EF46AB`
+
+源 payload 位于 `F:\GAME\复现路径\datasets\ispd2005\payload\`。Xplace 的 `data/raw/ispd2005` 布局尚未准备。
+
+### 其他工具状态
+
+- DREAMPlace：`network-failed`，目标目录不存在；三次只读 HEAD 失败后已停止。
+- OpenROAD：`deferred`。
+- OpenROAD-flow-scripts：`deferred`。
+- DAC 2012：`manual-required`。
+- 不要在本轮 Xplace 编译任务中重新下载这些工具。
+
+## 已完成实施提交链
+
+```text
+ac869ed docs: record Xplace Python environment
+39563e9 docs: record Xplace system toolchain
+e145b3a docs: record Xplace build baseline
+33ee4af chore: ignore local worktrees
+1255f0d docs: plan Xplace build environment
+321c060 docs: design Xplace build environment
+```
+
+设计与实施计划：
+
+- `docs/superpowers/specs/2026-07-20-xplace-build-environment-design.md`
+- `docs/superpowers/plans/2026-07-20-xplace-build-environment.md`
+
+## 重启后的第一组检查
+
+先报告结果，不要修改文件：
 
 ```powershell
 $root='F:\GAME\复现路径'
+$wt="$root\.worktrees\xplace-build"
 git -c safe.directory='F:/GAME/复现路径' -C $root status --short --branch
-git -c safe.directory='F:/GAME/复现路径' -C $root log -2 --oneline
-Get-Content "$root\manifests\download-status.csv"
-Get-PSDrive -Name F | Select-Object Used,Free
-Get-Process git,curl -ErrorAction SilentlyContinue
+git -c safe.directory='F:/GAME/复现路径/.worktrees/xplace-build' -C $wt status --short --branch
+git -c safe.directory='F:/GAME/复现路径/.worktrees/xplace-build' -C $wt diff -- progress.md task_plan.md scripts/check-xplace-build.sh
+git -c safe.directory='F:/GAME/复现路径/.worktrees/xplace-build' -C $wt log -6 --oneline
+Get-Process git,curl,wsl -ErrorAction SilentlyContinue
+wsl.exe --list --verbose
 ```
 
-若工作树出现未知修改、下载进程仍在运行或目标目录已含非 Git 文件，不要删除或覆盖；先向用户说明。
-
-### 2. 优先完成 WSL2 安装
-
-上次检测到 `wsl.exe` 存在，但 `wsl --status` 返回安装提示；Docker 未安装。先运行：
+然后逐条短命令验证，不要使用容易挂起的超长复合 WSL 命令：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File 'F:\GAME\复现路径\scripts\check-environment.ps1'
+wsl.exe -d Ubuntu-24.04 -u amirocok -- /home/amirocok/miniforge3/bin/conda --version
+wsl.exe -d Ubuntu-24.04 -u amirocok -- /home/amirocok/miniforge3/bin/conda run -n eda-repro python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available(), torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0))"
 ```
 
-若 WSL2 尚未安装，向用户申请管理员授权后执行 Windows 官方安装流程。WSL2 安装可能再次要求重启；若要求重启，先更新本文件或新增进度记录并提交，再停止。
+若 WSL 再次出现命令长期无返回，先检查是否有安装/编译进程；不要直接删除环境。`wsl.exe --shutdown` 会终止所有 WSL 进程，必须再次取得用户授权才能执行。
 
-### 3. 在稳定网络下逐个下载工具
+## 接下来严格执行顺序
 
-一次只处理一个仓库，顺序：Xplace → DREAMPlace → OpenROAD → OpenROAD-flow-scripts。优先使用官方 Git clone，因为它能记录 commit 和子模块：
+### 1. 完成 Task 4，不重写现有脚本
 
-```powershell
-git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/cuhk-eda/Xplace.git 'F:\GAME\复现路径\third_party\Xplace'
-git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/limbo018/DREAMPlace.git 'F:\GAME\复现路径\third_party\DREAMPlace'
-git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/The-OpenROAD-Project/OpenROAD.git 'F:\GAME\复现路径\third_party\OpenROAD'
-git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts.git 'F:\GAME\复现路径\third_party\OpenROAD-flow-scripts'
+1. 阅读 worktree 中未提交的 `scripts/check-xplace-build.sh`、`progress.md`、`task_plan.md`。
+2. 复核脚本使用 Windows `git.exe` 检查 F 盘 Xplace clean/HEAD。
+3. 运行 `bash -n` 和静态 `main.py` 检查。
+4. 在 Lenovo 用户的 Ubuntu 中运行脚本；构建前应在 GPU 检查通过后因 `cpp_to_py` 扩展未构建而非 0。
+5. 确认失败不是 stdin、路径、Git CRLF 或 Conda 捕获问题。
+6. 更新记录，`git diff --check`，只 stage 三个 Task 4 文件，提交：
+   `test: add Xplace build acceptance check`
+7. 按 `subagent-driven-development` 流程完成规格审查，再完成质量审查；有问题由原实施者修复并复审。
+
+### 2. Task 5：编译 Xplace 并准备数据
+
+- 源码目录必须仍 clean、HEAD 固定。
+- 若 `build/` 已存在，先检查，不自动删除。
+- CMake 关键参数：
+
+```text
+-G Ninja
+-DCMAKE_BUILD_TYPE=Release
+-DCMAKE_CUDA_ARCHITECTURES=89
+-DCMAKE_CXX_ABI=0
+-DPYTHON_EXECUTABLE=/home/amirocok/miniforge3/envs/eda-repro/bin/python
 ```
 
-规则：
+- 并行度最多 8，不使用 `-j40`。
+- 保存 `configure.log`、`build.log`、`install.log` 于 ignored build 目录。
+- 首个编译错误立即保留证据；未经用户新授权，不修改 Xplace 源码。
+- 编译成功后检查 `.so`、`ldd` 无 `not found`、核心扩展可导入。
+- 将 adaptec1/2/4 的六个 `.gz` Bookshelf 文件解压复制到 Xplace ignored 的 `data/raw/ispd2005/<design>/`，源 payload 不变；目标存在时不覆盖。
+- 不运行 `main.py`、placement、routing、timing 或论文指标实验。
+- 完成后更新受控记录、提交并进行规格/质量审查。
 
-- 若目录已存在，先验证 `.git`、`remote.origin.url`、HEAD 和工作树；不要覆盖。
-- 若 clone 失败且只留下空的 `.git` 半成品，精确核验后才可删除该单一目录。
-- 不使用来源不明的镜像。
-- 不再用 codeload ZIP 反复从零下载，除非网络已稳定且能完成 CRC 校验。
-- 每完成一个仓库就立即记录 remote、HEAD、branch、submodule status 与磁盘占用。
+### 3. Task 6：最终非实验验收
 
-### 4. 补齐 benchmark
+- 运行 `scripts/check-xplace-build.sh`，预期末行：
+  `xplace_non_experiment_checks=pass`
+- 更新 `docs/xplace-build-record.md`、`docs/setup-guide.md`、`manifests/download-status.csv`、`progress.md`、`task_plan.md`。
+- Xplace 状态只有在构建和非实验验收真实通过后才写 `built`。
+- 验证 Xplace 工作树 clean，build/data 生成物被主仓库忽略。
+- 最终提交并进行整体代码审查；不要把 deferred/network-failed 资源描述为完成。
 
-先完成科研计划前两周所需的三个小 benchmark。adaptec1 已存在，因此再从官方竞赛页选择两个较小设计，推荐 adaptec2、adaptec4；若需要 ISPD 2006 趋势，再补 adaptec5。
+## 执行边界
 
-官方入口：
-
-- ISPD 2005：https://www.ispd.cc/contests/05/contest.htm
-- ISPD 2006：https://www.ispd.cc/contests/06/contest.html
-- DAC 2012：http://archive.sigda.org/dac2012/contest/dac2012_contest.html
-
-下载必须使用 `.partial` 临时名或下载工具的完整性机制；下载后先列出 tar 内容，拒绝绝对路径和 `..` traversal，再解压、计算 SHA-256 并更新 manifest。DAC 2012 官方归档上次超时；若仍不可达，保留 `manual-required`，不要使用不明镜像。获取后必须验证 `.route` 与 `.shapes`。
-
-### 5. 环境准备边界
-
-本阶段继续遵循“下载源码、数据、环境清单和脚本，不编译安装工具”。WSL2/Ubuntu 安装完成后，只运行 `scripts/check-environment.sh` 并记录缺失依赖；不要直接开始长时间编译，除非用户再次授权。
-
-### 6. 更新记录并提交
-
-每个资源完成后更新：
-
-- `manifests/tools.csv`
-- `manifests/download-status.csv`
-- `manifests/files.sha256`
-- 必要时更新 `docs/setup-guide.md` 和 dataset README
-
-第三方源码、dataset payload、build 和 results 必须保持 Git ignored。提交前运行：
-
-```powershell
-git -c safe.directory='F:/GAME/复现路径' -C 'F:\GAME\复现路径' status --short
-git -c safe.directory='F:/GAME/复现路径' -C 'F:\GAME\复现路径' check-ignore -v third_party/Xplace/README.md
-git -c safe.directory='F:/GAME/复现路径' -C 'F:\GAME\复现路径' check-ignore -v datasets/ispd2005/payload/adaptec1.tar.gz
-```
-
-只提交受控的文档、脚本和 manifests。最终报告每个工具/数据集的 `downloaded`、`manual-required` 或 `network-failed` 状态，不把未完成下载描述为成功。
-
-## 本次续跑验收条件
-
-- WSL2 状态明确；若安装完成，记录 Ubuntu 版本。
-- 至少 Xplace 与 DREAMPlace 两个源码仓库完整，HEAD 与 manifest 一致；理想状态是四个工具均完整。
-- 至少三个小 placement benchmark 完整、可列包、已解压且有 SHA-256。
-- DAC 2012 已获得且含 `.route/.shapes`，或有可验证的人工下载阻塞说明。
-- Git 工作树干净，第三方与数据大文件未被主仓库跟踪。
+- 用户授权：安装依赖、编译 Xplace、准备数据、进行非实验导入/GPU验收。
+- 用户未授权：运行 placement 实验、修改 Xplace 源码、删除未知文件、修改全局 Git/DNS/hosts、安装 Docker/Innovus、重新获取其他大型工具。
+- 网络只用官方来源；相同失败三次停止，不使用未知镜像。
+- 所有第三方源码、dataset payload、build、结果继续保持 Git ignored。
