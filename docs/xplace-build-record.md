@@ -1,6 +1,6 @@
 # Xplace build record
 
-System toolchain installed and verified on 2026-07-21 (Asia/Shanghai). This record was updated at `2026-07-21T16:56:50Z` UTC; that is the documentation time, not a claim about the package transaction's exact completion second. No Xplace source was modified, no Xplace build was run, and no experiment was run.
+System toolchain installation began on 2026-07-21 (Asia/Shanghai). This post-build record was updated at `2026-07-22T03:07:51Z` UTC. The pinned Xplace checkout was built, installed, and accepted with non-experiment checks; no Xplace source was modified and no experiment was run.
 
 ## Fixed inputs
 
@@ -110,20 +110,92 @@ The package archives remain under `/var/cache/apt/archives/`, including:
 - Installed PyTorch: `2.5.1+cu121`; bundled CUDA runtime: `12.1`. This was selected instead of a CPU build or newer CUDA bundle because Xplace requires PyTorch >= 1.12/CUDA >= 11.3 and the host compiler is CUDA 12.0. PyTorch v2.5.1's tagged [`torch/utils/cpp_extension.py`](https://github.com/pytorch/pytorch/blob/v2.5.1/torch/utils/cpp_extension.py#L394-L416) raises for a CUDA major-version mismatch but emits `CUDA_MISMATCH_WARN` for a same-major minor-version mismatch.
 - Verification at `2026-07-21T16:39:25Z` UTC used `/home/amirocok/miniforge3/envs/eda-repro/bin/python -c "import sys, torch; print(sys.version.split()[0]); print(torch.__version__); print(torch.version.cuda); print(torch.compiled_with_cxx11_abi()); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0)); print(torch.cuda.get_device_capability(0))"`: Python is `3.10.20`; PyTorch is `2.5.1+cu121`; bundled CUDA is `12.1`; `torch.compiled_with_cxx11_abi()` is `False`; `torch.cuda.is_available()` is `True`; device is `NVIDIA GeForce RTX 4060 Laptop GPU`; capability is `(8, 9)`.
 - Pip-only audit commands were `/home/amirocok/miniforge3/bin/conda list -n eda-repro --show-channel-urls`, `/home/amirocok/miniforge3/envs/eda-repro/bin/python -m pip show torch`, and `/home/amirocok/miniforge3/envs/eda-repro/bin/python -c "import torch; print(torch.__file__)"`. The Conda listing contains `torch 2.5.1+cu121 pypi_0 pypi` and no `pytorch`, `torchvision`, or `torchaudio` package; pip reports location `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages`, and the import resolves to `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages/torch/__init__.py`. This confirms a single pip installation rather than a mixed Conda/pip PyTorch installation.
-- No Xplace build was run, no Xplace source was modified, and no experiment was run.
+- The Python-environment step did not yet build Xplace. The later build recorded below completed without modifying Xplace source or running an experiment.
 
 ## Xplace build
 
-- Required system packages installed: complete through Task 3.
-- Compiler, CMake, CUDA, and `sm_89` toolchain verification: complete through Task 3.
-- Xplace configure/build command and output: **pending** and intentionally not run through Task 3.
-- Xplace import/load smoke test: **pending**.
+- Windows Git verified Xplace clean at `49cf66bc75ba9908f145bb6686f03cde692367cf` and pybind11 clean at `83b92ceb3537666fb0188f564e1d53bf8c80b0ba` before the build.
+- The exact interpreter was `/home/amirocok/miniforge3/envs/eda-repro/bin/python` (Python 3.10.20); PyTorch `2.5.1+cu121` reported C++11 ABI `False`. The toolchain was GCC/G++ 13.3.0 and `/usr/bin/nvcc` CUDA 12.0.140.
+- CMake configured the pinned source into `Xplace/build` with Ninja, Release, CUDA architecture 89, ABI 0, and the exact Python executable. Configure exited 0.
+- `cmake --build Xplace/build --parallel 8` completed 120/120 and exited 0; `cmake --install Xplace/build` exited 0. Logs are `Xplace/build/configure.log`, `Xplace/build/build.log`, and `Xplace/build/install.log`; these replay artifacts are intentionally Git-ignored. Installation produced 12 Python extensions plus `libflute.so` and `libxplace_common.so` in `cpp_to_py/cpybin`.
+- A bare `ldd` and direct extension import initially failed because the installed extension RUNPATH contains only `cpp_to_py/cpybin`, while Torch shared libraries live under `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages/torch/lib`. This was a runtime search-path result, not a compile/link failure.
+- Diagnostic A imported `torch` before `cpp_to_py.cpybin.dct_cuda` and exited 0 (`A_OK`). Diagnostic B used that exact Torch lib directory in command-local `LD_LIBRARY_PATH`: `ldd` contained no `not found`, and all 12 extensions imported without preloading Torch (`B_ALL_OK 12`). No global shell setting or Xplace source changed.
+- The 12-module import was a one-time diagnostic. The persistent `scripts/check-xplace-build.sh` acceptance checks the GPU, data, and three core modules (`dct_cuda`, `density_map_cuda`, and `hpwl_cuda`), importing Torch first. It exited 0 with final line `PASS: Xplace build prerequisites are ready`; it did not run `main.py` or any experiment.
 - Xplace source modification: none.
+
+### Reproducible build and runtime commands
+
+Run these commands inside `Ubuntu-24.04` as `amirocok`:
+
+```bash
+readonly XPLACE='/mnt/f/GAME/复现路径/third_party/Xplace'
+readonly PYTHON='/home/amirocok/miniforge3/envs/eda-repro/bin/python'
+
+cmake -S "$XPLACE" -B "$XPLACE/build" -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CUDA_ARCHITECTURES=89 \
+  -DCMAKE_CXX_ABI=0 \
+  -DPYTHON_EXECUTABLE="$PYTHON" 2>&1 | tee "$XPLACE/build/configure.log"
+cmake --build "$XPLACE/build" --parallel 8 2>&1 | tee "$XPLACE/build/build.log"
+cmake --install "$XPLACE/build" 2>&1 | tee "$XPLACE/build/install.log"
+
+cd "$XPLACE"
+ldd cpp_to_py/cpybin/dct_cuda.cpython-310-x86_64-linux-gnu.so
+"$PYTHON" -c "import importlib; importlib.import_module('cpp_to_py.cpybin.dct_cuda')"
+
+"$PYTHON" -c "import torch, importlib; importlib.import_module('cpp_to_py.cpybin.dct_cuda'); print('A_OK')"
+
+torchlib="$($PYTHON -c "import torch; print(torch.__path__[0] + '/lib')")"
+LD_LIBRARY_PATH="$torchlib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+  ldd cpp_to_py/cpybin/dct_cuda.cpython-310-x86_64-linux-gnu.so
+LD_LIBRARY_PATH="$torchlib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$PYTHON" -c \
+  "import importlib; modules=('dct_cuda','density_map_cuda','draw_placement','flute_cpp','gpudp','gpugr','hpwl_cuda','io_parser','routedp','wa_wirelength_hpwl_cuda','gputimer','wirelength_timing_cuda'); [importlib.import_module('cpp_to_py.cpybin.' + name) for name in modules]; print('B_ALL_OK', len(modules))"
+```
+
+## ISPD 2005 runtime data
+
+- The previously absent target `Xplace/data/raw/ispd2005` was created. For each of `adaptec1`, `adaptec2`, and `adaptec4`, six source gzip members (`aux`, `nets`, `nodes`, `pl`, `scl`, `wts`) were decompressed with `gzip -cd`; every output was checked absent first and noclobber behavior was enabled.
+- Each target design contains exactly six non-empty expected files. Source gzip members and tar archives were not modified.
+- Archive SHA-256 values match `datasets/ispd2005/payload/files.sha256` / recovery evidence: adaptec1 `B694DEDFE15BFFA7CB92DFBEE0BC11906F5D334D211F51D82D0AC1EFFB6C0A08`, adaptec2 `E5A7BC0E343A97F3D9D3A1C871636A4B51DA7F64EE71D2F04E7DB295655A09A2`, and adaptec4 `CA894BCF93ACE5998DD393A6B6D5F240D3C695159CDC62AB055B8EDF70EF46AB`.
+
+Replay the non-overwriting data preparation and verification from the main repository root:
+
+```bash
+readonly REPO='/mnt/f/GAME/复现路径'
+readonly XPLACE="$REPO/third_party/Xplace"
+readonly SRC="$REPO/datasets/ispd2005/payload"
+readonly DST="$XPLACE/data/raw/ispd2005"
+set -o noclobber
+for design in adaptec1 adaptec2 adaptec4; do
+  test ! -e "$DST/$design"
+  mkdir -p "$DST/$design"
+  for extension in aux nets nodes pl scl wts; do
+    test ! -e "$DST/$design/$design.$extension"
+    gzip -cd "$SRC/$design/$design.$extension.gz" > "$DST/$design/$design.$extension"
+  done
+  test "$(find "$DST/$design" -maxdepth 1 -type f | wc -l)" -eq 6
+done
+sha256sum "$SRC/adaptec1.tar.gz" "$SRC/adaptec2.tar.gz" "$SRC/adaptec4.tar.gz"
+printf '%s  %s\n' \
+  B694DEDFE15BFFA7CB92DFBEE0BC11906F5D334D211F51D82D0AC1EFFB6C0A08 "$SRC/adaptec1.tar.gz" \
+  E5A7BC0E343A97F3D9D3A1C871636A4B51DA7F64EE71D2F04E7DB295655A09A2 "$SRC/adaptec2.tar.gz" \
+  CA894BCF93ACE5998DD393A6B6D5F240D3C695159CDC62AB055B8EDF70EF46AB "$SRC/adaptec4.tar.gz" | sha256sum -c -
+bash "$REPO/.worktrees/xplace-build/scripts/check-xplace-build.sh"
+```
+
+The equivalent Windows archive evidence command is:
+
+```powershell
+Get-FileHash -Algorithm SHA256 `
+  F:\GAME\复现路径\datasets\ispd2005\payload\adaptec1.tar.gz, `
+  F:\GAME\复现路径\datasets\ispd2005\payload\adaptec2.tar.gz, `
+  F:\GAME\复现路径\datasets\ispd2005\payload\adaptec4.tar.gz
+```
 
 ## Non-experiment acceptance
 
 - Ubuntu package indexes refreshed and requested dependencies installed: complete.
 - Apt transaction removal count: 0; Linux display-driver metapackage installed: no.
 - RTX 4060, driver 560.94, compute capability 8.9, and nvcc `sm_89` support verified: complete.
-- Xplace build and non-experiment smoke test: **pending**.
+- Xplace build and non-experiment smoke test: complete.
 - Experiments and benchmarks: out of scope and not run.

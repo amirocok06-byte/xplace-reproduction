@@ -63,6 +63,14 @@
 - Installed the pip CUDA build `torch==2.5.1` from the official cu121 index. Verified `torch=2.5.1+cu121`, bundled CUDA 12.1, C++11 ABI false, CUDA available, RTX 4060 Laptop GPU, and capability `(8, 9)` at `2026-07-21T16:39:25Z` UTC.
 - Did not build Xplace, modify Xplace source, or run an experiment.
 
+## 2026-07-22 Xplace build completion
+
+- Configure, Ninja build (120/120 with 8 jobs), and install exited 0; logs remain in `Xplace/build/{configure,build,install}.log`.
+- Bare `ldd`/direct import exposed the Torch runtime search-path boundary. Preloading `torch` succeeded (`A_OK`); command-local `LD_LIBRARY_PATH` produced an `ldd` result with no `not found` and imported all 12 extensions (`B_ALL_OK 12`). No global shell or Xplace source changed.
+- adaptec1/adaptec2/adaptec4 each contain six non-empty Bookshelf files; archive SHA-256 values match `files.sha256` / recovery evidence.
+- `scripts/check-xplace-build.sh` exited 0 with `PASS: Xplace build prerequisites are ready`.
+- No `main.py`, experiment, or benchmark was run.
+
 ## 2026-07-22 Xplace build acceptance check
 
 - TDD red: before implementation, `./scripts/check-xplace-build.sh` exited 1 with `No such file or directory`.

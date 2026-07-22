@@ -74,3 +74,10 @@
 - Cross-directory red verification showed that the import gate depended on caller cwd: it failed at `cpp_to_py` from the worktree and at `cpp_to_py.cpybin` from Xplace.
 - The script now changes to the pinned Xplace checkout before importing. Final runs from both the worktree and `/tmp` exited 1 with the same first error, `ModuleNotFoundError: No module named 'cpp_to_py.cpybin'`. This is the expected pre-build `cpp_to_py` artifact failure; no `cpybin`, `.so`, or `.pyd` artifact exists. The later data gate was not reached and was not the cause of either failure.
 - No Xplace build, data preparation, or experiment execution was performed.
+
+## Task 5 completion (2026-07-22) — canonical status
+
+- [x] Configure, build, and install pinned Xplace with CUDA architecture 89 and ABI0.
+- [x] Prepare non-overwriting adaptec1/adaptec2/adaptec4 Bookshelf data and verify archive hashes.
+- [x] Pass the controlled non-experiment acceptance script and record runtime-loader diagnostics.
+- [x] Preserve Xplace source and avoid `main.py`/experiment execution.
