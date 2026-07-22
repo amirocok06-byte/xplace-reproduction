@@ -81,3 +81,10 @@
 - The script now changes to the pinned Xplace checkout before the Python import gate, making imports independent of the caller's cwd.
 - Final pre-build runs from both the worktree and `/tmp` exited 1 with the same first error, `ModuleNotFoundError: No module named 'cpp_to_py.cpybin'`. This is the expected pre-build `cpp_to_py` artifact failure: Xplace contains no `cpp_to_py/cpybin` directory and no `.so` or `.pyd` extension artifacts. The later data gate was not reached and was not the cause of either failure.
 - Did not build Xplace, prepare data, modify Xplace source, or run an experiment.
+
+## 2026-07-22 Task 6 final acceptance
+
+- Final non-experiment acceptance completed at `2026-07-22T03:19:37Z` UTC.
+- `bash -n` passed, static inspection found no `main.py`, and the direct Ubuntu acceptance script exited 0 with exact final line `xplace_non_experiment_checks=pass`.
+- The persistent acceptance script verified Python 3.10.20, PyTorch 2.5.1+cu121, CUDA availability on the RTX 4060, pinned clean Xplace and pybind11 checkouts, all 12 explicitly named extension imports, and non-empty adaptec1/adaptec2/adaptec4 data.
+- No experiment, benchmark, or `main.py` was run.

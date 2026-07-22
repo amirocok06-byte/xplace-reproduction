@@ -2,23 +2,23 @@
 
 ## 目标
 
-从 2026-07-20 WSL 重启检查点继续，完成 WSL2/Ubuntu 状态确认、官方工具源码和 benchmark 获取、manifest 更新与最终 Git 验收；不编译 EDA 工具，不覆盖未知文件。
+从 2026-07-20 WSL 重启检查点继续，完成 Xplace 依赖安装、固定源码编译、三个 benchmark 数据准备、非实验验收、manifest/文档更新与最终 Git 验收。DREAMPlace、OpenROAD 和 OpenROAD-flow-scripts 仍保持延后；不运行实验或 benchmark。
 
 ## 阶段
 
 - [x] 阶段 1：恢复检查（Git、manifest、磁盘、残留进程与目录）
 - [x] 阶段 2：确认并完成 WSL2/Ubuntu，运行环境检查脚本
-- [ ] 阶段 3：逐个获取并验证 Xplace、DREAMPlace、OpenROAD、OpenROAD-flow-scripts（Xplace 完成；其余因系统 GitHub 网络不稳定而延后）
-- [ ] 阶段 4：获取并安全验证至少三个 placement benchmark，核实 DAC 2012 状态（最小集 3/3 完成；DAC 2012 保持 manual-required）
-- [ ] 阶段 5：更新 manifests/文档，验证 ignore 与 Git 工作树并提交
+- [x] 阶段 3：获取、固定并编译验收 Xplace（DREAMPlace、OpenROAD、OpenROAD-flow-scripts 因网络不稳定而延后）
+- [x] 阶段 4：获取并安全验证三个 placement benchmark（最小集 3/3 完成；DAC 2012 保持 manual-required）
+- [x] 阶段 5：更新 manifests/文档，验证非实验验收、ignore 与 Git 工作树并提交
 
 ## 边界与决策
 
 - 官方来源优先；不使用来源不明镜像。
 - 一次仅下载一个工具仓库；已有目录先验证，未知内容不删除、不覆盖。
 - 下载归档先验证路径安全与完整性，再解压。
-- 本阶段不编译或安装 EDA 工具。
-- 替代路线：先形成 Xplace + ISPD2005 的最小可复现实验；只有用户再次明确授权后，才安装构建依赖、编译 Xplace 并运行 smoke experiment。
+- 用户已授权安装 Xplace 构建依赖并编译 Xplace；未授权执行 `main.py`、smoke experiment 或 benchmark。
+- 本轮只完成 Xplace；DREAMPlace、OpenROAD 和 OpenROAD-flow-scripts 的获取/构建仍延后。
 
 ## 错误记录
 
@@ -81,3 +81,10 @@
 - [x] Prepare non-overwriting adaptec1/adaptec2/adaptec4 Bookshelf data and verify archive hashes.
 - [x] Pass the controlled non-experiment acceptance script and record runtime-loader diagnostics.
 - [x] Preserve Xplace source and avoid `main.py`/experiment execution.
+
+## Task 6 completion (2026-07-22) — canonical status
+
+- [x] Pass final direct Ubuntu non-experiment acceptance with exact final line `xplace_non_experiment_checks=pass`.
+- [x] Verify Python/PyTorch/GPU, clean pinned Xplace/pybind11, all 12 build artifacts, and three prepared datasets.
+- [x] Record final UTC, setup command, and built manifest state.
+- [x] Verify ignore rules and repository cleanliness without running `main.py` or an experiment.

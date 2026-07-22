@@ -1,6 +1,6 @@
 # Xplace build record
 
-System toolchain installation began on 2026-07-21 (Asia/Shanghai). This post-build record was updated at `2026-07-22T03:07:51Z` UTC. The pinned Xplace checkout was built, installed, and accepted with non-experiment checks; no Xplace source was modified and no experiment was run.
+System toolchain installation began on 2026-07-21 (Asia/Shanghai). Final acceptance completed at `2026-07-22T03:19:37Z` UTC. The pinned Xplace checkout was built, installed, and accepted with non-experiment checks; no Xplace source was modified and no experiment was run.
 
 ## Fixed inputs
 
@@ -120,7 +120,7 @@ The package archives remain under `/var/cache/apt/archives/`, including:
 - `cmake --build Xplace/build --parallel 8` completed 120/120 and exited 0; `cmake --install Xplace/build` exited 0. Logs are `Xplace/build/configure.log`, `Xplace/build/build.log`, and `Xplace/build/install.log`; these replay artifacts are intentionally Git-ignored. Installation produced 12 Python extensions plus `libflute.so` and `libxplace_common.so` in `cpp_to_py/cpybin`.
 - A bare `ldd` and direct extension import initially failed because the installed extension RUNPATH contains only `cpp_to_py/cpybin`, while Torch shared libraries live under `/home/amirocok/miniforge3/envs/eda-repro/lib/python3.10/site-packages/torch/lib`. This was a runtime search-path result, not a compile/link failure.
 - Diagnostic A imported `torch` before `cpp_to_py.cpybin.dct_cuda` and exited 0 (`A_OK`). Diagnostic B used that exact Torch lib directory in command-local `LD_LIBRARY_PATH`: `ldd` contained no `not found`, and all 12 extensions imported without preloading Torch (`B_ALL_OK 12`). No global shell setting or Xplace source changed.
-- The 12-module import was a one-time diagnostic. The persistent `scripts/check-xplace-build.sh` acceptance checks the GPU, data, and three core modules (`dct_cuda`, `density_map_cuda`, and `hpwl_cuda`), importing Torch first. It exited 0 with final line `PASS: Xplace build prerequisites are ready`; it did not run `main.py` or any experiment.
+- The persistent `scripts/check-xplace-build.sh` acceptance verifies the pinned clean Xplace and pybind11 checkouts, GPU, non-empty data files, and all 12 explicitly named extensions, importing Torch first. Final acceptance exited 0 with exact final line `xplace_non_experiment_checks=pass`; it did not run `main.py` or any experiment.
 - Xplace source modification: none.
 
 ### Reproducible build and runtime commands
@@ -193,6 +193,8 @@ Get-FileHash -Algorithm SHA256 `
 ```
 
 ## Non-experiment acceptance
+
+Final acceptance UTC: `2026-07-22T03:19:37Z`. The direct Ubuntu command `bash /mnt/f/GAME/复现路径/.worktrees/xplace-build/scripts/check-xplace-build.sh` exited 0 with exact final line `xplace_non_experiment_checks=pass`.
 
 - Ubuntu package indexes refreshed and requested dependencies installed: complete.
 - Apt transaction removal count: 0; Linux display-driver metapackage installed: no.
