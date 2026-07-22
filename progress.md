@@ -62,3 +62,14 @@
 - Created `eda-repro` from `env/environment.yml`; verified environment Python 3.10.20.
 - Installed the pip CUDA build `torch==2.5.1` from the official cu121 index. Verified `torch=2.5.1+cu121`, bundled CUDA 12.1, C++11 ABI false, CUDA available, RTX 4060 Laptop GPU, and capability `(8, 9)` at `2026-07-21T16:39:25Z` UTC.
 - Did not build Xplace, modify Xplace source, or run an experiment.
+
+## 2026-07-22 Xplace build acceptance check
+
+- TDD red: before implementation, `./scripts/check-xplace-build.sh` exited 1 with `No such file or directory`.
+- Added a read-only acceptance check for the pinned Xplace HEAD/clean state, Conda toolchain, RTX 4060 CUDA capability, required CUDA extension imports, and uncompressed adaptec1/adaptec2/adaptec4 Bookshelf files.
+- `bash -n scripts/check-xplace-build.sh` exited 0; static search found no `main.py` execution.
+- The first WSL run exposed a DrvFS/CRLF false dirty result from Linux Git. The check now requires WSL-visible Windows `git.exe`, with command-local `safe.directory`, so clean validation matches the Windows checkout without changing global configuration.
+- Cross-directory red verification exposed a cwd-dependent import result: from the worktree the script failed with `No module named 'cpp_to_py'`, while from Xplace it failed with `No module named 'cpp_to_py.cpybin'`.
+- The script now changes to the pinned Xplace checkout before the Python import gate, making imports independent of the caller's cwd.
+- Final pre-build runs from both the worktree and `/tmp` exited 1 with the same first error, `ModuleNotFoundError: No module named 'cpp_to_py.cpybin'`. This is the expected pre-build `cpp_to_py` artifact failure: Xplace contains no `cpp_to_py/cpybin` directory and no `.so` or `.pyd` extension artifacts. The later data gate was not reached and was not the cause of either failure.
+- Did not build Xplace, prepare data, modify Xplace source, or run an experiment.

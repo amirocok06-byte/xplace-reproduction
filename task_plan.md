@@ -65,3 +65,12 @@
 - A subsequent compound read-only WSL verification stalled and was terminated without deleting the prefix or rerunning the installer. After explicit user approval, `wsl.exe --shutdown` returned exit code 0; Ubuntu restarted successfully, and independent short commands verified Conda 26.3.2, base Python 3.13.13, prefix ownership `amirocok:amirocok:755`, and that only the base environment existed before environment creation.
 - Chrome checks failed under the sandbox identity but succeeded under the required Lenovo identity (exit 0, Chrome port 9222, proxy ready); this confirmed an identity-boundary issue rather than a missing Chrome checkbox.
 - `eda-repro` creation and the official PyTorch cu121 pip installation subsequently completed successfully; no remaining Task 3 error is open.
+
+## Task 4 execution notes (2026-07-22)
+
+- TDD red was observed before implementation: the acceptance script path returned `No such file or directory` (exit 1).
+- The initial Linux Git clean check reported the entire Windows checkout dirty because DrvFS exposed line-ending differences. `core.fileMode=false` did not address CRLF differences. Resolution: use WSL-visible Windows `git.exe` for pinned HEAD and clean checks, retain command-local `safe.directory`, and fail explicitly if `git.exe` is unavailable.
+- Syntax validation passed (`bash -n`, exit 0), and the script contains no `main.py` invocation.
+- Cross-directory red verification showed that the import gate depended on caller cwd: it failed at `cpp_to_py` from the worktree and at `cpp_to_py.cpybin` from Xplace.
+- The script now changes to the pinned Xplace checkout before importing. Final runs from both the worktree and `/tmp` exited 1 with the same first error, `ModuleNotFoundError: No module named 'cpp_to_py.cpybin'`. This is the expected pre-build `cpp_to_py` artifact failure; no `cpybin`, `.so`, or `.pyd` artifact exists. The later data gate was not reached and was not the cause of either failure.
+- No Xplace build, data preparation, or experiment execution was performed.
