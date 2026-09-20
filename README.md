@@ -1,12 +1,8 @@
 # EDA 布局与可布线性复现路径
 
-本仓库执行 8 周科研训练路线：建立 DREAMPlace 基线、接入 OpenROAD 全局布线、训练拥塞预测器，并开展基于拥塞图的 cell inflation/spreading 实验。
+建立 DREAMPlace 基线、接入 OpenROAD 全局布线、训练拥塞预测器，并开展基于拥塞图的 cell inflation/spreading 实验。
 
-## 仓库边界
 
-- Git 跟踪文档、环境清单、脚本、配置说明、实验表、资源版本与校验清单。
-- Git 不跟踪 `third_party/` 源码、`datasets/*/payload/` 大型数据、构建产物和 `results/` 输出。
-- 本阶段只下载与准备，不编译或安装 DREAMPlace、OpenROAD、Xplace、CUDA 和 WSL2。
 
 ## 快速开始
 
