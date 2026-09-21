@@ -35,3 +35,56 @@
 - 用户 VPN 未恢复系统 GitHub 连接。执行路线切换到官方 ISPD benchmark，先完成 adaptec2/adaptec4，再申请编译授权以运行 Xplace/adaptec1 最小实验。
 - adaptec2 已从官方页面下载，完成 tar 路径检查、SHA-256、解压、六个内部 gzip 完整性与 Git ignore 验证；benchmark 进度 2/3。
 - adaptec4 已完成同等级验证；最小 benchmark 目标达到 3/3。下一步需用户授权安装依赖并编译 Xplace，或继续处理 DAC 2012 人工阻塞。
+
+## 2026-07-21 Xplace build baseline
+
+- 已在 `codex/xplace-build` worktree 核对 Xplace `49cf66bc75ba9908f145bb6686f03cde692367cf` 与 pybind11 `83b92ceb3537666fb0188f564e1d53bf8c80b0ba`。
+- 已确认 `third_party/Xplace/build/probe` 由 `.gitignore` 的 `/third_party/*/` 规则忽略。
+- 已只读记录 Ubuntu/WSL kernel、CPU、内存、磁盘、GPU/driver/VRAM/compute capability 与指定包的 `apt-cache policy`。
+- 已知身份边界：沙箱默认身份 `CodexSandboxOffline` 不能直接访问 Lenovo 所有的 Xplace Git/WSL 上下文；本次仅在 Lenovo 上下文执行获批的只读探测，且 Git 仅使用单命令 `safe.directory`，未改动全局配置。
+- 未安装任何包，未编译 Xplace，未修改 Xplace 源码，未运行实验；后续项保持 pending。
+
+## 2026-07-21 Xplace system toolchain
+
+- Documentation timestamp: `2026-07-21T15:30:38Z` UTC (recording time, not the package transaction's exact completion second).
+- Refreshed Ubuntu 24.04 package indexes from official Ubuntu archive/security repositories.
+- Installed the authorized Xplace system dependencies with `apt-get install` and Ubuntu `nvidia-cuda-toolkit` 12.0; the transaction had 30 dependency upgrades and 0 removals, and installed no Linux display-driver metapackage.
+- Verified gcc/g++ 13.3, CMake 3.28.3, Ninja 1.11.1, Cairo 1.18.0, Boost 1.83, and nvcc 12.0.
+- Verified RTX 4060 driver 560.94 / compute capability 8.9 and successful `sm_89` compilation.
+- Did not modify or build Xplace and did not run an experiment.
+
+## 2026-07-22 Xplace Python environment
+
+- Verified the browser-downloaded Miniforge `26.3.2-2` Linux x86_64 installer: `106038245` bytes and SHA-256 `42260ffe3830fb953d5eee1bbb32229ff06aa7c3833c1ed7a9a0420a95685d94`.
+- Confirmed `/home/amirocok/miniforge3` was absent immediately before installation, then ran the verified installer offline as `amirocok` with `-b -p /home/amirocok/miniforge3`; no shell initialization was requested.
+- A compound WSL verification stalled. After explicit user approval, `wsl.exe --shutdown` returned exit code 0 and Ubuntu restarted successfully; short commands verified Conda 26.3.2, prefix owner/mode `amirocok:amirocok:755`, and base Python 3.13.13.
+- Chrome `web-access` succeeded in Lenovo user context (Chrome port 9222, proxy ready).
+- Created `eda-repro` from `env/environment.yml`; verified environment Python 3.10.20.
+- Installed the pip CUDA build `torch==2.5.1` from the official cu121 index. Verified `torch=2.5.1+cu121`, bundled CUDA 12.1, C++11 ABI false, CUDA available, RTX 4060 Laptop GPU, and capability `(8, 9)` at `2026-07-21T16:39:25Z` UTC.
+- Did not build Xplace, modify Xplace source, or run an experiment.
+
+## 2026-07-22 Xplace build completion
+
+- Configure, Ninja build (120/120 with 8 jobs), and install exited 0; logs remain in `Xplace/build/{configure,build,install}.log`.
+- Bare `ldd`/direct import exposed the Torch runtime search-path boundary. Preloading `torch` succeeded (`A_OK`); command-local `LD_LIBRARY_PATH` produced an `ldd` result with no `not found` and imported all 12 extensions (`B_ALL_OK 12`). No global shell or Xplace source changed.
+- adaptec1/adaptec2/adaptec4 each contain six non-empty Bookshelf files; archive SHA-256 values match `files.sha256` / recovery evidence.
+- `scripts/check-xplace-build.sh` exited 0 with `PASS: Xplace build prerequisites are ready`.
+- No `main.py`, experiment, or benchmark was run.
+
+## 2026-07-22 Xplace build acceptance check
+
+- TDD red: before implementation, `./scripts/check-xplace-build.sh` exited 1 with `No such file or directory`.
+- Added a read-only acceptance check for the pinned Xplace HEAD/clean state, Conda toolchain, RTX 4060 CUDA capability, required CUDA extension imports, and uncompressed adaptec1/adaptec2/adaptec4 Bookshelf files.
+- `bash -n scripts/check-xplace-build.sh` exited 0; static search found no `main.py` execution.
+- The first WSL run exposed a DrvFS/CRLF false dirty result from Linux Git. The check now requires WSL-visible Windows `git.exe`, with command-local `safe.directory`, so clean validation matches the Windows checkout without changing global configuration.
+- Cross-directory red verification exposed a cwd-dependent import result: from the worktree the script failed with `No module named 'cpp_to_py'`, while from Xplace it failed with `No module named 'cpp_to_py.cpybin'`.
+- The script now changes to the pinned Xplace checkout before the Python import gate, making imports independent of the caller's cwd.
+- Final pre-build runs from both the worktree and `/tmp` exited 1 with the same first error, `ModuleNotFoundError: No module named 'cpp_to_py.cpybin'`. This is the expected pre-build `cpp_to_py` artifact failure: Xplace contains no `cpp_to_py/cpybin` directory and no `.so` or `.pyd` extension artifacts. The later data gate was not reached and was not the cause of either failure.
+- Did not build Xplace, prepare data, modify Xplace source, or run an experiment.
+
+## 2026-07-22 Task 6 final acceptance
+
+- Final non-experiment acceptance completed at `2026-07-22T03:19:37Z` UTC.
+- `bash -n` passed, static inspection found no `main.py`, and the direct Ubuntu acceptance script exited 0 with exact final line `xplace_non_experiment_checks=pass`.
+- The persistent acceptance script verified Python 3.10.20, PyTorch 2.5.1+cu121, CUDA availability on the RTX 4060, pinned clean Xplace and pybind11 checkouts, all 12 explicitly named extension imports, and non-empty adaptec1/adaptec2/adaptec4 data.
+- No experiment, benchmark, or `main.py` was run.

@@ -12,5 +12,16 @@ conda env create -f env/environment.yml
 conda activate eda-repro
 ```
 
+Xplace 构建完成后，在仓库根目录中先激活固定环境，再直接运行非实验验收脚本：
+
+```bash
+source /home/amirocok/miniforge3/etc/profile.d/conda.sh
+conda activate eda-repro
+REPO_ROOT="$PWD"
+bash "$REPO_ROOT/scripts/check-xplace-build.sh"
+```
+
+成功时末行必须精确为 `xplace_non_experiment_checks=pass`。该步骤不运行 `main.py`，不执行实验或 benchmark。
+
 PyTorch 不固定 CUDA 构建。应先记录 `nvidia-smi`、CUDA Toolkit 与 GPU compute capability，再按 DREAMPlace 当前 README 选择兼容组合。本次不执行编译；后续编译需记录 commit、命令、CMake 选项与失败日志。
 
